@@ -58,6 +58,7 @@ app.post("/", function (req, res) {
           //if (ingatlanok.length!==0 &&  ingatlanok.length === counts  ) {//limit the founds
             let obj = avgCalc.average(ingatlanok)
             res.render("list", {
+              numberOfElements: obj.numberofElements,
               avgPrice: obj.averagePrice,
               avgNmPrice: obj.averagePriceSQM ,
               avgSize: obj.averageSize,
