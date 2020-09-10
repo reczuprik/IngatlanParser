@@ -5,7 +5,7 @@ const avgCalc = require(__dirname + "/averageCalculator.js");
 
 const cheerio = require("cheerio");
 const request = require("request");
-const pagelimit = 40;
+const pagelimit = 100;
 const bodyParser = require("body-parser");
 app.use(bodyParser.urlencoded({
   extended: true
