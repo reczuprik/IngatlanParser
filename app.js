@@ -44,15 +44,18 @@ app.post("/", function (req, res) {
       await page.close();
 
       // Recursively scrape the next page
-      if (ingatlanokOnPage.length < 1 || nextPageNumber>40) {
+      if (ingatlanokOnPage.length < 1) {
         // Terminate if no ingatlanok exist
         return ingatlanokOnPage
       } else {
         // Go fetch the next page ?page=X+1
         const nextPageNumber = parseInt(url.match(/page=(\d+)$/)[1], 10) + 1;
         const nextUrl = webAddress + ("?page=") + nextPageNumber;
+        if(nextPageNumber>40){
+          return ingatlanokOnPage
+        }else{
         console.log(nextPageNumber);
-        return ingatlanokOnPage.concat(await extractingatlanok(nextUrl))
+        return ingatlanokOnPage.concat(await extractingatlanok(nextUrl))}
       }
     };
 
