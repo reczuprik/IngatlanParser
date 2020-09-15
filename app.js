@@ -44,7 +44,7 @@ app.post("/", function (req, res) {
       await page.close();
 
       // Recursively scrape the next page
-      if (ingatlanokOnPage.length < 1) {
+      if (ingatlanokOnPage.length < 1 || nextPageNumber>40) {
         // Terminate if no ingatlanok exist
         return ingatlanokOnPage
       } else {
