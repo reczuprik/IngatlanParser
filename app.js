@@ -16,7 +16,7 @@ app.get("/", function (req, res) {
   res.render("home", {});
 })
 app.post("/", function (req, res) {
-  const webAddress= req.body.webaddress;
+  const webAddress = req.body.webaddress;
   (async () => {
 
     // Extract ingatlanok on the page, recursively check the next page in the URL pattern
@@ -25,10 +25,10 @@ app.post("/", function (req, res) {
       // Scrape the data we want
       const page = await browser.newPage();
       await page.setRequestInterception(true);
-      
+
       page.on('request', (request) => {
         if (request.resourceType() !== "document")
-        request.abort();
+          request.abort();
         else request.continue();
       });
 
@@ -50,7 +50,7 @@ app.post("/", function (req, res) {
       } else {
         // Go fetch the next page ?page=X+1
         const nextPageNumber = parseInt(url.match(/page=(\d+)$/)[1], 10) + 1;
-        const nextUrl = webAddress + ("?page=")+ nextPageNumber;
+        const nextUrl = webAddress + ("?page=") + nextPageNumber;
         console.log(nextPageNumber);
         return ingatlanokOnPage.concat(await extractingatlanok(nextUrl))
       }
@@ -62,7 +62,7 @@ app.post("/", function (req, res) {
         '--disable-setuid-sandbox',
       ],
     });
-    const firstUrl =webAddress.split("?page=")[0]+("?page=1");
+    const firstUrl = webAddress.split("?page=")[0] + ("?page=1");
     const ingatlanok = await extractingatlanok(firstUrl);
 
     // Todo: Update database with ingatlanok
@@ -86,23 +86,4 @@ if (port == null || port == "") {
 app.listen(port, function () {
   console.log("Server started on port 3000");
 });
-
-function getProperties($, callback) {
-
-  $(".listing__card").each((index, card) => {
-    let item = {
-      price: "",
-      pricesqm: "",
-      size: "",
-      property: ""
-    }
-    item.price = Number($(card).find(".price").text().replace(/[^0-9\.]+/g, ""));
-    item.pricesqm = Number($(card).find(".price--sqm").text().replace(/[^0-9\.]+/g, ""));
-    item.size = Number($(card).find(".listing__data--area-size").text().replace(/[^0-9\.]+/g, ""));
-    item.property = Number($(card).find(".listing__data--plot-size").text().replace(/[^0-9\.]+/g, ""));
-    ingatlanok.push(item);
-  });
-  return callback();
-
-}
 
