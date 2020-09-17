@@ -6,16 +6,14 @@ exports.average = function (ingatlanok) {
     let totalProperty = 0;
 
     ingatlanok.forEach((item) => {
-        totalPrice += item.price;
+        totalPrice += item.price*1000000;
         totalPricesqm += Math.round(item.price*1000000/item.size);
         totalSize += item.size;
         totalProperty += item.property;
-         
-
     });
-
+    
     let obj = {
-        averagePrice: Math.round(totalPrice / ingatlanok.length *1000000).toLocaleString('hu-HU', {
+        averagePrice: Math.round(totalPrice / ingatlanok.length ).toLocaleString('hu-HU', {
             style: 'currency',
             maximumSignificantDigits:  4,
             currency: 'HUF',

@@ -1,8 +1,9 @@
 const express = require("express");
 const app = express();
-
 const avgCalc = require(__dirname + "/averageCalculator.js");
-const puppeteer = require("puppeteer");
+const cheerio = require("cheerio");
+const got = require("got");
+
 const bodyParser = require("body-parser");
 
 
@@ -21,27 +22,32 @@ app.post("/", function (req, res) {
 
     // Extract ingatlanok on the page, recursively check the next page in the URL pattern
     const extractingatlanok = async url => {
-
       // Scrape the data we want
-      const page = await browser.newPage();
-      await page.setRequestInterception(true);
+      const response = await got(url);
+      const $ = cheerio.load(response.body);
 
-      page.on('request', (request) => {
-        if (request.resourceType() !== "document")
-          request.abort();
-        else request.continue();
-      });
+      function createData($) {
+        const ingatlanOnOnePage = []
+        $('div.listing__card').each(function (i, e) {
+          const newElement = cheerio.load(e);
+          const newItem = {
+            price: "0",
+            priceSqm: "0",
+            size: "0",
+            property: "0"
+          }
+          newItem.price = Number(newElement("div.price").text().replace(/[^0-9\.]+/g, ""));
+          newItem.priceSqm = Number(newElement("div.price--sqm").text().replace(/[^0-9\.]+/g, ""));
+          newItem.size = Number(newElement("div.listing__data--area-size").text().replace(/[^0-9\.]+/g, ""));
+          newItem.property = Number(newElement("div.listing__data--plot-size").text().replace(/[^0-9\.]+/g, ""));
+          ingatlanOnOnePage.push(newItem);
+        });
 
-      await page.goto(url);
-      const ingatlanokOnPage = await page.evaluate(() =>
-        Array.from(document.querySelectorAll("div.listing__card")).map(card => ({
-          price: Number(card.querySelector("div.price").innerText.replace(/[^0-9\.]+/g, "")),
-          pricesqm: Number(card.querySelector("div.price--sqm").innerText.replace(/[^0-9\.]+/g, "")),
-          size: Number(card.querySelector("div.listing__data--area-size").innerText.replace(/[^0-9\.]+/g, "")),
-          property: Number(card.querySelector("div.listing__data--plot-size").innerText.replace(/[^0-9\.]+/g, ""))
-        }))
-      );
-      await page.close();
+        return ingatlanOnOnePage;
+
+      }
+      const ingatlanokOnPage = createData($);
+
 
       // Recursively scrape the next page
       if (ingatlanokOnPage.length < 1) {
@@ -49,22 +55,20 @@ app.post("/", function (req, res) {
         return ingatlanokOnPage
       } else {
         // Go fetch the next page ?page=X+1
+
         const nextPageNumber = parseInt(url.match(/page=(\d+)$/)[1], 10) + 1;
         const nextUrl = webAddress + ("?page=") + nextPageNumber;
-        if(nextPageNumber>40){
-          return ingatlanokOnPage
-        }else{
         console.log(nextPageNumber);
-        return ingatlanokOnPage.concat(await extractingatlanok(nextUrl))}
+        if (nextPageNumber > 40) {
+          return ingatlanokOnPage
+        } else {
+
+        return ingatlanokOnPage.concat(await extractingatlanok(nextUrl))
+        }
       }
     };
 
-    const browser = await puppeteer.launch({
-      args: [
-        '--no-sandbox',
-        '--disable-setuid-sandbox',
-      ],
-    });
+
     const firstUrl = webAddress.split("?page=")[0] + ("?page=1");
     const ingatlanok = await extractingatlanok(firstUrl);
 
@@ -77,8 +81,10 @@ app.post("/", function (req, res) {
       avgSize: averageValues.averageSize,
       avgPropSize: averageValues.averageProperty,
     });
-    await browser.close();
+
+   
   })();
+
 
 })
 
@@ -89,4 +95,3 @@ if (port == null || port == "") {
 app.listen(port, function () {
   console.log("Server started on port 3000");
 });
-
