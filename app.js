@@ -59,11 +59,10 @@ app.post("/", function (req, res) {
         const nextPageNumber = parseInt(url.match(/page=(\d+)$/)[1], 10) + 1;
         const nextUrl = webAddress + ("?page=") + nextPageNumber;
         console.log(nextPageNumber);
-        if (nextPageNumber > 40) {
+        if (nextPageNumber > 37) {
           return ingatlanokOnPage
         } else {
-
-        return ingatlanokOnPage.concat(await extractingatlanok(nextUrl))
+     return ingatlanokOnPage.concat(await extractingatlanok(nextUrl))
         }
       }
     };
