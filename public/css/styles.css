@@ -1,18 +1,15 @@
-
-
-
 body {
-    background-color: #f0ece3;
-    
-  }
-  
-  .centered {
-      padding-left:  20%;
-      padding-right:  20%;
-      padding-bottom:  10%;
-      text-align: center;
-  }
-  
+  background-color: #f0ece3;
+
+}
+
+.centered {
+  padding-left: 20%;
+  padding-right: 20%;
+  padding-bottom: 10%;
+  text-align: center;
+}
+
 
 .footer {
   position: fixed;
@@ -22,21 +19,37 @@ body {
   background-color: #dfd3c3;
   color: white;
   text-align: center;
-  font-size: clamp(10px, 4vw, 20px);
+  font-size: clamp(8px, 3vw, 15px);
 
 }
-.jumbotron{
-  background-color:transparent
+
+.jumbotron {
+  background-color: transparent
 }
-.titleStlye{
+
+.titleStlye {
   font-size: clamp(25px, 7vw, 50px);
 
   margin-bottom: 4rem;
   font-weight: 400;
-    line-height: 1.4
+  line-height: 1.4
 }
-.info{
+
+.info {
   font-size: clamp(15px, 4vw, 20px);
   line-height: 1.0;
   font-weight: 100;
+
+
+}
+
+.inputField {
+  width: 50vh;
+}
+
+.flexbox-container{
+  display: flex;  
+  flex-direction: column;
+  justify-content:center;
+  Align-items: center;
 }
